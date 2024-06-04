@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.Serialization;
 
 namespace Completed
 {
@@ -9,15 +10,15 @@ namespace Completed
 
     public class GameManager : MonoBehaviour
     {
-        public float levelStartDelay = 2f; //Time to wait before starting level, in seconds.
-        public float turnDelay = 0.1f; //Delay between each Player turn.
-        public int playerFoodPoints = 100; //Starting value for Player food points.
+        [FormerlySerializedAs("levelStartDelay")] public float _levelStartDelay = 2f; //Time to wait before starting level, in seconds.
+        [FormerlySerializedAs("turnDelay")] public float _turnDelay = 0.1f; //Delay between each Player turn.
+        [FormerlySerializedAs("playerFoodPoints")] public int _playerFoodPoints = 100; //Starting value for Player food points.
 
         public static GameManager
             instance = null; //Static instance of GameManager which allows it to be accessed by any other script.
 
-        [HideInInspector]
-        public bool playersTurn = true; //Boolean to check if it's players turn, hidden in inspector but public.
+        [FormerlySerializedAs("playersTurn")] [HideInInspector]
+        public bool _playersTurn = true; //Boolean to check if it's players turn, hidden in inspector but public.
 
 
         private Text levelText; //Text to display current level number.
@@ -95,7 +96,7 @@ namespace Completed
             levelImage.SetActive(true);
 
             //Call the HideLevelImage function with a delay in seconds of levelStartDelay.
-            Invoke("HideLevelImage", levelStartDelay);
+            Invoke("HideLevelImage", _levelStartDelay);
 
             //Clear any Enemy objects in our List to prepare for next level.
             enemies.Clear();
@@ -119,7 +120,7 @@ namespace Completed
         private void Update()
         {
             //Check that playersTurn or enemiesMoving or doingSetup are not currently true.
-            if (playersTurn || enemiesMoving || doingSetup)
+            if (_playersTurn || enemiesMoving || doingSetup)
 
                 //If any of these are true, return and do not start MoveEnemies.
                 return;
@@ -156,12 +157,12 @@ namespace Completed
             enemiesMoving = true;
 
             //Wait for turnDelay seconds, defaults to .1 (100 ms).
-            yield return new WaitForSeconds(turnDelay);
+            yield return new WaitForSeconds(_turnDelay);
 
             //If there are no enemies spawned (IE in first level):
             if (enemies.Count == 0)
                 //Wait for turnDelay seconds between moves, replaces delay caused by enemies moving when there are none.
-                yield return new WaitForSeconds(turnDelay);
+                yield return new WaitForSeconds(_turnDelay);
 
             //Loop through List of Enemy objects.
             for (var i = 0; i < enemies.Count; i++)
@@ -170,11 +171,11 @@ namespace Completed
                 enemies[i].MoveEnemy();
 
                 //Wait for Enemy's moveTime before moving next Enemy, 
-                yield return new WaitForSeconds(enemies[i].moveTime);
+                yield return new WaitForSeconds(enemies[i]._moveTime);
             }
 
             //Once Enemies are done moving, set playersTurn to true so player can move.
-            playersTurn = true;
+            _playersTurn = true;
 
             //Enemies are done moving, set enemiesMoving to false.
             enemiesMoving = false;

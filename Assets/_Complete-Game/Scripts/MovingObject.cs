@@ -1,15 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.Serialization;
 
 namespace Completed
 {
     //The abstract keyword enables you to create classes and class members that are incomplete and must be implemented in a derived class.
     public abstract class MovingObject : MonoBehaviour
     {
-        public float moveTime = 0.1f; //Time it will take object to move, in seconds.
-        public LayerMask blockingLayer; //Layer on which collision will be checked.
+        public float _moveTime = 0.1f; //Time it will take object to move, in seconds.
+        public LayerMask _blockingLayer; //Layer on which collision will be checked.
 
-
+ 
         private BoxCollider2D boxCollider; //The BoxCollider2D component attached to this object.
         private Rigidbody2D rb2D; //The Rigidbody2D component attached to this object.
         private float inverseMoveTime; //Used to make movement more efficient.
@@ -26,7 +27,7 @@ namespace Completed
             rb2D = GetComponent<Rigidbody2D>();
 
             //By storing the reciprocal of the move time we can use it by multiplying instead of dividing, this is more efficient.
-            inverseMoveTime = 50f / moveTime;
+            inverseMoveTime = 50f / _moveTime;
         }
 
 
@@ -44,7 +45,7 @@ namespace Completed
             boxCollider.enabled = false;
 
             //Cast a line from start point to end point checking collision on blockingLayer.
-            hit = Physics2D.Linecast(start, end, blockingLayer);
+            hit = Physics2D.Linecast(start, end, _blockingLayer);
 
             //Re-enable boxCollider after linecast
             boxCollider.enabled = true;
