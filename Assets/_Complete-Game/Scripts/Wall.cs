@@ -12,13 +12,13 @@ namespace Completed
         [FormerlySerializedAs("hp")] public int _hp = 3; //hit points for the wall.
 
 
-        private SpriteRenderer spriteRenderer; //Store a component reference to the attached SpriteRenderer.
+        private SpriteRenderer _spriteRenderer; //Store a component reference to the attached SpriteRenderer.
 
 
         private void Awake()
         {
             //Get a component reference to the SpriteRenderer.
-            spriteRenderer = GetComponent<SpriteRenderer>();
+            _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
 
@@ -29,7 +29,7 @@ namespace Completed
             SoundManager.instance.RandomizeSfx(_chopSound1, _chopSound2);
 
             //Set spriteRenderer to the damaged wall sprite.
-            spriteRenderer.sprite = _dmgSprite;
+            _spriteRenderer.sprite = _dmgSprite;
 
             //Subtract loss from hit point total.
             _hp -= loss;
