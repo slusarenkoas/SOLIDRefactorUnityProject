@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEngine.Serialization;
@@ -7,12 +8,18 @@ namespace Completed
 {
     using System.Collections.Generic; //Allows us to use Lists. 
     using UnityEngine.UI; //Allows us to use UI.
+    
+    [Serializable]
+    public class GameConfig
+    {
+        [field: SerializeField] public float LevelStartDelay { get; private set; } = 2f;
+        [field: SerializeField] public float TurnDelay { get; private set; } = 0.1f;
+        [field: SerializeField] public int PlayerFoodPoints { get;private set; } = 100;
+    }
 
     public class GameManager : MonoBehaviour
     {
-        [FormerlySerializedAs("levelStartDelay")] public float _levelStartDelay = 2f; //Time to wait before starting level, in seconds.
-        [FormerlySerializedAs("turnDelay")] public float _turnDelay = 0.1f; //Delay between each Player turn.
-        [FormerlySerializedAs("playerFoodPoints")] public int _playerFoodPoints = 100; //Starting value for Player food points.
+        [field: SerializeField] public GameConfig Config { get; private set; }
 
         public static GameManager
             instance = null; //Static instance of GameManager which allows it to be accessed by any other script.
@@ -21,18 +28,14 @@ namespace Completed
         public bool _playersTurn = true; //Boolean to check if it's players turn, hidden in inspector but public.
 
 
-        private Text _levelText; //Text to display current level number.
-        private GameObject _levelImage; //Image to block out level as levels are being set up, background for levelText.
-        private BoardManager _boardScript; //Store a reference to our BoardManager which will set up the level.
-        private int _level = 1; //Current level number, expressed in game as "Day 1".
-        private List<Enemy> _enemies; //List of all Enemy units, used to issue them move commands.
-        private bool _enemiesMoving; //Boolean to check if enemies are moving.
+        private Text _levelText; 
+        private GameObject _levelImage;
+        private BoardManager _boardScript;
+        private int _level = 1; 
+        private List<Enemy> _enemies;
+        private bool _enemiesMoving; 
 
-        private bool
-            _doingSetup = true; //Boolean to check if we're setting up board, prevent Player from moving during setup.
-
-
-        //Awake is always called before any Start functions
+        private bool _doingSetup = true; 
         private void Awake()
         {
             //Check if instance already exists
@@ -96,7 +99,7 @@ namespace Completed
             _levelImage.SetActive(true);
 
             //Call the HideLevelImage function with a delay in seconds of levelStartDelay.
-            Invoke("HideLevelImage", _levelStartDelay);
+            Invoke("HideLevelImage", Config.LevelStartDelay);
 
             //Clear any Enemy objects in our List to prepare for next level.
             _enemies.Clear();
@@ -157,12 +160,12 @@ namespace Completed
             _enemiesMoving = true;
 
             //Wait for turnDelay seconds, defaults to .1 (100 ms).
-            yield return new WaitForSeconds(_turnDelay);
+            yield return new WaitForSeconds(Config.TurnDelay);
 
             //If there are no enemies spawned (IE in first level):
             if (_enemies.Count == 0)
                 //Wait for turnDelay seconds between moves, replaces delay caused by enemies moving when there are none.
-                yield return new WaitForSeconds(_turnDelay);
+                yield return new WaitForSeconds(Config.TurnDelay);
 
             //Loop through List of Enemy objects.
             for (var i = 0; i < _enemies.Count; i++)
